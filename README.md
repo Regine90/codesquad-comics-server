@@ -1,1 +1,1 @@
-# codesquad-comics-server
+# Codesquad Comics Server
