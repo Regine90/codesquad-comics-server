@@ -16,8 +16,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/api/books", bookRoutes);
-
 // path
 app.get("/", (req, res, next) => {
   //   res.send("This route points to the Home page");
@@ -25,6 +23,8 @@ app.get("/", (req, res, next) => {
     success: { message: "This route points to the Home page" },
   });
 });
+
+app.use("/api/books", bookRoutes);
 
 app.listen(PORT, () => {
   console.log(`The server is listening on port ${PORT}`);
