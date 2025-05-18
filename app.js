@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const path = require("path");
 const bookRoutes = require("./routes/bookRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 const PORT = 8080;
@@ -25,6 +26,7 @@ app.get("/", (req, res, next) => {
 });
 
 app.use("/api/books", bookRoutes);
+app.use("/auth", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`The server is listening on port ${PORT}`);

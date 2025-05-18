@@ -26,7 +26,7 @@ const getBook = async (req, res, next) => {
     const book = booksData.find((book) => book._id === _id);
     return res.status(200).json({
       success: { message: "Successful to continue!" },
-      data: { book }
+      data: { book },
     });
   } catch (error) {
     return res.status(400).json({
