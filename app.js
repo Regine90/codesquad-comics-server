@@ -1,3 +1,7 @@
+require("dotenv").config();
+require("./config/connection");
+require("./config/authStrategy");
+
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
@@ -8,6 +12,9 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 const PORT = 8080;
+
+const session = require("express-session");
+const passport = require("passport");
 
 // middleware
 app.use(morgan("combined"));
