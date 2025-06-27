@@ -1,3 +1,7 @@
+require("dotenv").config();
+require("./config/connection");
+require("./config/authStrategy");
+
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
@@ -7,12 +11,15 @@ const bookRoutes = require("./routes/bookRoutes");
 const authRoutes = require("./routes/authRoutes");
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
+
+const session = require("express-session");
+const passport = require("passport");
 
 // middleware
 app.use(morgan("combined"));
 app.use(helmet());
-app.use(cors());
+app.use(cors({ credentials: true, origin: true}));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
