@@ -33,7 +33,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, // Set to true when deploying with HTTPS
+      secure: true, // Set to true when deploying with HTTPS
       maxAge: 1000 * 60 * 60 * 24,
     },
   })
