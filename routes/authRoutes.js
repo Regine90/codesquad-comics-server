@@ -15,7 +15,7 @@ router.get("/login/error", (req, res, next) => {
   return res.json("Login error");
 });
 
-router.get("/login/local", localLogin);
+router.post("/login/local", localLogin);
 router.get("/logout", logout);
 
 router.get("/unauthenticated", (req, res, next) => {

@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 
 // LOGIN
-const loginLocal = (req, res, next) => {
+const localLogin  = (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);
     if (!user) return res.status(401).json({ error: info.message });
@@ -67,7 +67,7 @@ const signupRequest = async (req, res, next) => {
 };
 
 module.exports = {
-  loginLocal,
+  localLogin ,
   logoutRequest,
   signupRequest,
 };
