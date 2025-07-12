@@ -1,70 +1,73 @@
-const register = async (req, res, next) => {
-  const { firstName, lastName, username, password } = req.body;
-  console.log({ firstName, lastName, username, password });
+const passport = require("passport");
+const bcrypt = require("bcrypt");
+const User = require("../models/userModel");
+
+// LOGIN
+const loginLocal = (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) return next(err);
+    if (!user) return res.status(401).json({ error: info.message });
+
+    req.login(user, (err) => {
+      if (err) return next(err);
+      const userCopy = { ...user.toObject(), password: undefined };
+      return res.status(200).json({
+        message: "Login successful",
+        data: { user: userCopy },
+        statusCode: 200,
+      });
+    });
+  })(req, res, next);
+};
+
+// LOGOUT
+const logoutRequest = (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+    req.session.destroy(() => {
+      res.clearCookie("connect.sid");
+      res.status(200).json({ message: "Logout successful", statusCode: 200 });
+    });
+  });
+};
+
+// SIGNUP
+const signupRequest = async (req, res, next) => {
+  const { firstName, lastName, username, password, googleId, githubId } =
+    req.body;
+  if (!firstName || !username || !password) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
 
   try {
-    const newUser = {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
       firstName,
       lastName,
       username,
-      password,
-    };
-    console.log("code is operational");
-    return res.status(201).json({
-      success: { message: "New user is created!" },
-      data: { newUser },
+      password: hashedPassword,
+      googleId,
+      githubId,
     });
-  } catch (error) {
-    return res.status(500).json({
-      error: { message: "Internal server error!" },
+
+    await newUser.save();
+
+    req.login(newUser, (err) => {
+      if (err) return next(err);
+      newUser.password = undefined;
+      res.status(201).json({
+        message: "Signup successful",
+        data: { user: newUser },
+        statusCode: 201,
+      });
     });
+  } catch (err) {
+    next(err);
   }
 };
 
-const login = async (req, res, next) => {
-  return res.status(200).json({
-    success: { message: "User logged in." },
-  });
+module.exports = {
+  loginLocal,
+  logoutRequest,
+  signupRequest,
 };
-
-const logout = async (req, res, next) => {
-  console.log("Initializing logout controller logic...");
-
-  res.clearCookie("connect.sid");
-
-  function sessionDestruction(err) {
-    //error handling as a final check and a failsafe
-    if (err) {
-      return next(err);
-    }
-  }
-  sessionDestruction();
-  console.log("Logout function activated. Logging out...");
-
-  return res.status(200).json({
-    success: { message: "User logging out" },
-    statusCode: 200,
-  });
-};
-
-const localLogin = async (req, res, next) => {
-  let result = true;
-
-  function mockPassport(err, user) {
-    //error handling as a final check and a failsafe
-    if (err) {
-      return next(err);
-    }
-  }
-  //call the mockPassport feature
-  mockPassport();
-
-  return res.status(200).json({
-    success: { message: "Login successful." },
-    result: result,
-  });
-};
-
-
-
-module.exports = { register, login, logout, localLogin };

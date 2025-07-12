@@ -1,12 +1,11 @@
-// const booksData = require("../data/books");
+const Book = require("../models/bookModel");
 
+// GET all books
 const getAllBooks = async (req, res, next) => {
   try {
     const books = await Book.find({});
     return res.status(200).json({
-      success: {
-        message: "Successfully retrieved all books.",
-      },
+      success: { message: "Successfully retrieved all books." },
       data: { books },
     });
   } catch (error) {
@@ -14,6 +13,7 @@ const getAllBooks = async (req, res, next) => {
   }
 };
 
+// GET one book by ID
 const getBook = async (req, res, next) => {
   const { _id } = req.params;
 
@@ -22,8 +22,7 @@ const getBook = async (req, res, next) => {
       throw new Error("Id is required");
     }
 
-    const book = await Book.findById(_id); 
-
+    const book = await Book.findById(_id);
     if (!book) {
       throw new Error("Book not found");
     }
@@ -37,6 +36,7 @@ const getBook = async (req, res, next) => {
   }
 };
 
+// POST create a new book
 const createBook = async (req, res, next) => {
   const { title, author, publisher, genre, pages, rating, synopsis, imageUrl } =
     req.body;
@@ -68,6 +68,7 @@ const createBook = async (req, res, next) => {
   }
 };
 
+// PUT update a book
 const updateBook = async (req, res, next) => {
   const { _id } = req.params;
   const { title, author, publisher, genre, pages, rating, synopsis, imageUrl } =
@@ -79,16 +80,18 @@ const updateBook = async (req, res, next) => {
     }
 
     const updatedBook = await Book.findByIdAndUpdate(
-      _id, 
+      _id,
       {
-        title,
-        author,
-        publisher,
-        genre,
-        pages,
-        rating,
-        synopsis,
-        imageUrl,
+        $set: {
+          title,
+          author,
+          publisher,
+          genre,
+          pages,
+          rating,
+          synopsis,
+          imageUrl,
+        },
       },
       { new: true }
     );
@@ -97,7 +100,7 @@ const updateBook = async (req, res, next) => {
       throw new Error("Book not found");
     }
 
-    return res.status(200).json({
+    return res.status(201).json({
       success: { message: "Book updated successfully!" },
       data: { updatedBook },
     });
@@ -106,6 +109,7 @@ const updateBook = async (req, res, next) => {
   }
 };
 
+// DELETE a book
 const deleteBook = async (req, res, next) => {
   const { _id } = req.params;
 
@@ -114,7 +118,7 @@ const deleteBook = async (req, res, next) => {
       throw new Error("Id is required");
     }
 
-    const deletedBook = await Book.findByIdAndDelete(_id); 
+    const deletedBook = await Book.findByIdAndDelete(_id);
 
     if (!deletedBook) {
       throw new Error("Book not found");
@@ -129,4 +133,10 @@ const deleteBook = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllBooks, getBook, createBook, updateBook, deleteBook };
+module.exports = {
+  getAllBooks,
+  getBook,
+  createBook,
+  updateBook,
+  deleteBook,
+};
