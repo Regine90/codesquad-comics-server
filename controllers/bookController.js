@@ -5,7 +5,7 @@ const getAllBooks = async (req, res, next) => {
     const books = await Book.find({});
     return res.status(200).json({
       success: {
-        message: "This will lead to all the book pages in the books file.",
+        message: "Successfully retrieved all books.",
       },
       data: { books },
     });
@@ -18,13 +18,11 @@ const getBook = async (req, res, next) => {
   const { _id } = req.params;
 
   try {
-    // const book = booksData.find((book) => book._id === _id);
-
     if (!_id) {
       throw new Error("Id is required");
     }
 
-    const book = Book.findById(_id);
+    const book = await Book.findById(_id); 
 
     if (!book) {
       throw new Error("Book not found");
@@ -45,10 +43,10 @@ const createBook = async (req, res, next) => {
 
   try {
     if (!title || !author || !pages) {
-      throw new Error("One of the fields is missing, please try again!");
+      throw new Error("One of the required fields is missing.");
     }
 
-    const newBook = {
+    const newBook = new Book({
       title,
       author,
       publisher,
@@ -57,12 +55,12 @@ const createBook = async (req, res, next) => {
       rating,
       synopsis,
       imageUrl,
-    };
+    });
 
     await newBook.save();
 
     return res.status(201).json({
-      success: { message: "Sucessful!" },
+      success: { message: "Book created successfully!" },
       data: { newBook },
     });
   } catch (error) {
@@ -71,34 +69,38 @@ const createBook = async (req, res, next) => {
 };
 
 const updateBook = async (req, res, next) => {
+  const { _id } = req.params;
   const { title, author, publisher, genre, pages, rating, synopsis, imageUrl } =
     req.body;
-  const { _id } = req.params;
 
   try {
     if (!title || !author || !pages) {
-      throw new Error("One of the fields is missing, please try again!");
+      throw new Error("One of the required fields is missing.");
     }
+
     const updatedBook = await Book.findByIdAndUpdate(
-      id,
+      _id, 
       {
-        $set: {
-          title,
-          author,
-          publisher,
-          genre,
-          pages,
-          rating,
-          synopsis,
-          imageUrl,
-        },
+        title,
+        author,
+        publisher,
+        genre,
+        pages,
+        rating,
+        synopsis,
+        imageUrl,
       },
       { new: true }
     );
-    if (!updateBook) {
+
+    if (!updatedBook) {
       throw new Error("Book not found");
     }
-    return res.status(201).json({});
+
+    return res.status(200).json({
+      success: { message: "Book updated successfully!" },
+      data: { updatedBook },
+    });
   } catch (error) {
     return next(error);
   }
@@ -108,19 +110,22 @@ const deleteBook = async (req, res, next) => {
   const { _id } = req.params;
 
   try {
-
     if (!_id) {
       throw new Error("Id is required");
     }
-    
-    await Book.findByIdAndDelete(id);
-    // const books = booksData.filter((book) => book._id !== _id);
+
+    const deletedBook = await Book.findByIdAndDelete(_id); 
+
+    if (!deletedBook) {
+      throw new Error("Book not found");
+    }
+
     return res.status(200).json({
-      success: { message: "Id was found!" },
-      data: { books },
+      success: { message: "Book deleted successfully!" },
+      data: { _id },
     });
   } catch (error) {
-    return next(error)
+    return next(error);
   }
 };
 
